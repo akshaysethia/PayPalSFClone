@@ -1,0 +1,43 @@
+<template>
+  <lightning-card>
+    <br />
+    <h1 style="text-align: center; font-size: 40px; font-variant: small-caps;">
+      Entries (PassBook)
+    </h1>
+    <br />
+    <template if:true={loader}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="medium"
+      ></lightning-spinner>
+    </template>
+    <template if:false={loader}>
+      <template if:false={error}>
+        <template if:true={entries}>
+          <div style="text-align: center; margin: 20px;">
+            <lightning-button
+              label="PDF"
+              title="get PDF"
+              onclick={handlePDF}
+              class="slds-m-left_x-small"
+            ></lightning-button>
+          </div>
+        </template>
+        <template if:true={entries}>
+          <div style="margin: 40px; border: 2px solid black;">
+            <lightning-datatable
+              key-field="Id"
+              data={entries}
+              columns={columns}
+              onsave={handleSave}
+              draft-values={draftValues}
+            ></lightning-datatable>
+          </div>
+        </template>
+      </template>
+      <template if:true={error}>
+        {error}
+      </template>
+    </template>
+  </lightning-card>
+</template>

@@ -1,0 +1,304 @@
+<template>
+  <lightning-tabset>
+    <lightning-tab label="Profile" title="Profile">
+      <lightning-card class="header">
+        <br />
+        <h1 class="title">Profile</h1>
+        <template if:true={loader}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+          ></lightning-spinner>
+        </template>
+        <br />
+        <template if:false={loader}>
+          <template if:false={error}>
+            <template if:true={profile}>
+              <p>Name: {profile.Name}</p>
+              <br />
+              <p>Email: {profile.Email__c}</p>
+              <br />
+              <p>Contact: {profile.Contact_Number__c}</p>
+              <br />
+              <br />
+              <template if:false={edit}>
+                <lightning-button
+                  variant="destructive-text"
+                  label="Edit"
+                  title="Edit your Profile"
+                  onclick={editProfile}
+                ></lightning-button>
+              </template>
+            </template>
+            <template if:true={addProfile}>
+              <lightning-button
+                variant="brand"
+                label="Create Account"
+                title="Register"
+                onclick={handleClick}
+              ></lightning-button>
+            </template>
+          </template>
+          <template if:true={error}>
+            <p>{error}</p>
+          </template>
+          <template if:true={edit}>
+            <div class="forminput">
+              <lightning-input
+                label="Id"
+                value={profile.Id}
+                disabled
+              ></lightning-input>
+              <br />
+              <lightning-input
+                label="Name"
+                value={profile.Name}
+                data-field="Name"
+                onchange={handleChange}
+                required
+              ></lightning-input>
+              <br />
+              <lightning-input
+                label="Contact Number"
+                value={profile.Contact_Number__c}
+                data-field="Contact_Number"
+                onchange={handleChange}
+                class="slds-var-m-bottom_medium"
+                required
+              ></lightning-input>
+              <br />
+              <lightning-input
+                label="Email"
+                value={profile.Email__c}
+                disabled
+              ></lightning-input>
+              <br />
+              <lightning-button
+                label="Update Profile"
+                title="Update Profile"
+                variant="success"
+                onclick={updateUser}
+                disabled={disabled}
+              >
+              </lightning-button>
+              <lightning-button
+                variant="destructive"
+                label="Cancel"
+                title="Cancel Update"
+                onclick={editProfile}
+                class="slds-var-m-left_x-small"
+              ></lightning-button>
+            </div>
+          </template>
+        </template>
+      </lightning-card>
+    </lightning-tab>
+    <lightning-tab label="Wallet" title="Wallet">
+      <lightning-card class="header">
+        <br />
+        <h1 class="title">Wallet</h1>
+        <template if:true={loader}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+          ></lightning-spinner>
+        </template>
+        <br />
+        <template if:false={loader}>
+          <template if:false={error}>
+            <template if:true={profile}>
+              <template if:false={wallet}>
+                <lightning-button
+                  label="Get Wallet"
+                  title="Get Wallet"
+                  onclick={walletButton}
+                  class="slds-var-m-left_x-small"
+                ></lightning-button>
+              </template>
+              <template if:true={wallet}>
+                <div class="creditcard">
+                  <p>
+                    Name:
+                    <lightning-formatted-text
+                      value={wallet.Name}
+                    ></lightning-formatted-text>
+                  </p>
+                  <p>
+                    Balance:
+                    <lightning-formatted-number
+                      value={wallet.Balance__c}
+                      format-style="currency"
+                      currency-code="INR"
+                    ></lightning-formatted-number>
+                  </p>
+                  <template if:true={lessThan}>
+                    <div style="color: red;">Insufficent Balance</div>
+                  </template>
+                  <p>
+                    Time Stamp:
+                    <lightning-formatted-date-time
+                      value={wallet.Time_Stamp__c}
+                      year="2-digit"
+                      month="short"
+                      day="2-digit"
+                      weekday="long"
+                    ></lightning-formatted-date-time>
+                  </p>
+                </div>
+                <template if:false={bShowModal}>
+                  <lightning-button
+                    variant="brand"
+                    label="Add Money"
+                    title="Add"
+                    onclick={addMoney}
+                  >
+                  </lightning-button>
+                </template>
+                <template if:true={bShowModal}>
+                  <section
+                    role="dialog"
+                    tabindex="-1"
+                    aria-labelledby="modal-heading-01"
+                    aria-modal="true"
+                    aria-describedby="modal-content-id-1"
+                    class="slds-modal slds-fade-in-open tabcolor"
+                  >
+                    <div class="slds-modal__container">
+                      <header class="slds-modal__header">
+                        <h2
+                          id="modal-heading-01"
+                          class="slds-text-heading_medium slds-hyphenate"
+                          if:false={isEditForm}
+                          style="color: black;"
+                        >
+                          Add Money
+                        </h2>
+                      </header>
+                      <div if:true={isEditForm} class="slds-theme_default">
+                        <lightning-record-edit-form
+                          layout-type="Full"
+                          record-id={wallet.Id}
+                          object-api-name="Wallet__c"
+                          onsubmit={handleSubmit}
+                        >
+                          <lightning-input-field
+                            field-name="Add_Amount__c"
+                          ></lightning-input-field>
+                          <div style="text-align: center;">
+                            <lightning-button
+                              class="slds-var-m-top_small"
+                              variant="destructive-text"
+                              type="submit"
+                              label="Add Money"
+                            ></lightning-button>
+                            <p>&nbsp; &nbsp;</p>
+                            <lightning-button
+                              variant="brand"
+                              label="Close"
+                              title="Close"
+                              onclick={closeModal}
+                            >
+                            </lightning-button>
+                          </div>
+                        </lightning-record-edit-form>
+                        <br />
+                      </div>
+                      <!-- modal footer start-->
+                      <footer
+                        class="slds-modal__footer"
+                        if:false={isEditForm}
+                        style="color: black;"
+                      >
+                        <lightning-button
+                          variant="brand"
+                          label="Close"
+                          title="Close"
+                          onclick={closeModal}
+                        >
+                        </lightning-button>
+                      </footer>
+                    </div>
+                  </section>
+                </template>
+              </template>
+            </template>
+          </template>
+          <template if:true={error}>
+            <p>{error}</p>
+          </template>
+        </template>
+      </lightning-card>
+    </lightning-tab>
+    <lightning-tab label="Card" title="Card">
+      <lightning-card class="header">
+        <br />
+        <h1 class="title">Card</h1>
+        <template if:true={loader}>
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+          ></lightning-spinner>
+        </template>
+        <br />
+        <template if:false={loader}>
+          <template if:false={error}>
+            <template if:true={profile}>
+              <template if:false={card}>
+                <lightning-button
+                  label="Get Card"
+                  title="Get Card"
+                  onclick={cardButton}
+                  class="slds-var-m-left_x-small"
+                ></lightning-button>
+              </template>
+              <template if:true={card}>
+                <div class="creditcard">
+                  <p>
+                    Card Name:
+                    <lightning-formatted-text
+                      value={card.Name}
+                    ></lightning-formatted-text>
+                  </p>
+                  <p>
+                    Card Number :
+                    <lightning-formatted-text
+                      value={card.Card_Number__c}
+                    ></lightning-formatted-text>
+                  </p>
+                  <p>
+                    CVV:
+                    <lightning-formatted-number
+                      value={card.CVV__c}
+                      maximum-fraction-digits="0"
+                    ></lightning-formatted-number>
+                  </p>
+                  <p>
+                    Expiry Date :
+                    <lightning-formatted-date-time
+                      value={card.Expiry_Date__c}
+                      year="2-digit"
+                      month="short"
+                      day="2-digit"
+                      weekday="long"
+                    ></lightning-formatted-date-time>
+                  </p>
+                  <p>
+                    Limit:
+                    <lightning-formatted-number
+                      value={card.Limit__c}
+                      format-style="currency"
+                      currency-code="INR"
+                    ></lightning-formatted-number>
+                  </p>
+                </div>
+              </template>
+            </template>
+          </template>
+          <template if:true={error}>
+            <p>{error}</p>
+          </template>
+        </template>
+      </lightning-card>
+    </lightning-tab>
+  </lightning-tabset>
+</template>
