@@ -19,7 +19,7 @@
               label="PDF"
               title="get PDF"
               onclick={handlePDF}
-              class="slds-m-left_x-small"
+              class="slds-var-m-left_x-small"
             ></lightning-button>
           </div>
         </template>
@@ -36,7 +36,11 @@
         </template>
       </template>
       <template if:true={error}>
-        {error}
+        <div
+          style="text-align: center; font-size: 30px; font-variant: small-caps;"
+        >
+          {error}
+        </div>
       </template>
     </template>
   </lightning-card>

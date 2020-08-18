@@ -4,9 +4,9 @@ import getEntries from "@salesforce/apex/dataFetch.getEntries";
 import EntryId from "@salesforce/schema/Entry__c.Id";
 import EntryFlag from "@salesforce/schema/Entry__c.Flag_This__c";
 import { updateRecord } from "lightning/uiRecordApi";
+import EntryComment from "@salesforce/schema/Entry__c.Comment__c";
 
 const columns = [
-  { label: "Expence Name", fieldName: "Name" },
   { label: "Expense Desc.", fieldName: "Expense_Description__c", type: "text" },
   {
     label: "Time oF Transaction",
@@ -20,7 +20,7 @@ const columns = [
       minute: "2-digit"
     }
   },
-  { label: "Comment", fieldName: "Comment__c", type: "text" },
+  { label: "Comment", fieldName: "Comment__c", type: "text", editable: true },
   {
     label: "Amount",
     fieldName: "Amount__c",
@@ -71,6 +71,7 @@ export default class PassbookComponent extends LightningElement {
     const fields = {};
     fields[EntryId.fieldApiName] = event.detail.draftValues[0].Id;
     fields[EntryFlag.fieldApiName] = event.detail.draftValues[0].Flag_This__c;
+    fields[EntryComment.fieldApiName] = event.detail.draftValues[0].Comment__c;
 
     const recordInp = { fields };
 

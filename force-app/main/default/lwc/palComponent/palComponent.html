@@ -1,0 +1,198 @@
+<template>
+  <lightning-tabset>
+    <lightning-tab label="Users" title="Users">
+      <template if:true={loader}>
+        <lightning-spinner
+          alternative-text="Loading"
+          size="medium"
+        ></lightning-spinner>
+      </template>
+      <template if:false={loader}>
+        <template if:false={error}>
+          <template if:true={allUsers}>
+            <lightning-datatable
+              key-field="Id"
+              data={allUsers}
+              columns={columns}
+              hide-checkbox-column="true"
+              show-row-number-column="true"
+              onrowaction={callRowAction}
+            >
+            </lightning-datatable>
+          </template>
+        </template>
+        <template if:true={error}>
+          <div style="color: red; font-size: 30px;">
+            {error}
+          </div>
+        </template>
+      </template>
+    </lightning-tab>
+    <lightning-tab label="Pal" title="Pals">
+      <template if:true={loader}>
+        <lightning-spinner
+          alternative-text="Loading"
+          size="medium"
+        ></lightning-spinner>
+      </template>
+      <template if:false={loader}>
+        <template if:false={error}>
+          <template if:true={pals}>
+            <lightning-datatable
+              key-field="Id"
+              data={pals}
+              columns={cols}
+              hide-checkbox-column="true"
+              show-row-number-column="true"
+              onrowaction={handleRow}
+            >
+            </lightning-datatable>
+            <template if:true={showModal}>
+              <section
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="modal-heading-01"
+                aria-modal="true"
+                aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open"
+              >
+                <div class="slds-modal__container">
+                  <header class="slds-modal__header">
+                    <button
+                      class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                      title="Close"
+                    >
+                      <svg
+                        class="slds-button__icon slds-button__icon_large"
+                        aria-hidden="true"
+                      >
+                        <use
+                          xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"
+                        ></use>
+                      </svg>
+                      <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2
+                      id="modal-heading-01"
+                      class="slds-modal__title slds-hyphenate"
+                    >
+                      Send Money
+                    </h2>
+                  </header>
+                  <div
+                    class="slds-modal__content slds-p-around_medium"
+                    id="modal-content-id-1"
+                  >
+                    <lightning-record-edit-form
+                      layout-type="Full"
+                      record-id={record.Id}
+                      object-api-name="Pal__c"
+                      onsubmit={payPal}
+                    >
+                      <lightning-input-field
+                        field-name="Amount__c"
+                      ></lightning-input-field>
+                      <lightning-input-field
+                        field-name="Mode_Of_payment__c"
+                      ></lightning-input-field>
+                      <div style="text-align: center;">
+                        <lightning-button
+                          class="slds-var-m-top_small"
+                          variant="destructive-text"
+                          type="submit"
+                          label="Pay Bill"
+                        ></lightning-button>
+                        <p>&nbsp; &nbsp;</p>
+                        <lightning-button
+                          variant="brand"
+                          label="Close"
+                          title="Close"
+                          onclick={closeModal}
+                        >
+                        </lightning-button></div
+                    ></lightning-record-edit-form>
+                  </div>
+                </div>
+              </section>
+              <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <template if:true={editModal}>
+              <section
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="modal-heading-01"
+                aria-modal="true"
+                aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open"
+              >
+                <div class="slds-modal__container">
+                  <header class="slds-modal__header">
+                    <button
+                      class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                      title="Close"
+                    >
+                      <svg
+                        class="slds-button__icon slds-button__icon_large"
+                        aria-hidden="true"
+                      >
+                        <use
+                          xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"
+                        ></use>
+                      </svg>
+                      <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2
+                      id="modal-heading-02"
+                      class="slds-modal__title slds-hyphenate"
+                    >
+                      Edit Details
+                    </h2>
+                  </header>
+                  <div
+                    class="slds-modal__content slds-p-around_medium"
+                    id="modal-content-id-2"
+                  >
+                    <lightning-record-edit-form
+                      layout-type="Full"
+                      record-id={record.Id}
+                      object-api-name="Pal__c"
+                      onsubmit={payPal}
+                    >
+                      <lightning-input-field
+                        field-name="Amount__c"
+                      ></lightning-input-field>
+                      <lightning-input-field
+                        field-name="Mode_Of_payment__c"
+                      ></lightning-input-field>
+                      <div style="text-align: center;">
+                        <lightning-button
+                          class="slds-var-m-top_small"
+                          variant="destructive-text"
+                          type="submit"
+                          label="Pay Bill"
+                        ></lightning-button>
+                        <p>&nbsp; &nbsp;</p>
+                        <lightning-button
+                          variant="brand"
+                          label="Close"
+                          title="Close"
+                          onclick={closeModal}
+                        >
+                        </lightning-button></div
+                    ></lightning-record-edit-form>
+                  </div>
+                </div>
+              </section>
+              <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+          </template>
+        </template>
+        <template if:true={error}>
+          <div style="color: red; font-size: 30px;">
+            {error}
+          </div>
+        </template>
+      </template>
+    </lightning-tab>
+  </lightning-tabset>
+</template>

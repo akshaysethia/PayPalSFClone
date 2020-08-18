@@ -124,4 +124,84 @@ public with sharing class dataFetch {
     update card;
     return true;
   }
+
+  @AuraEnabled(cacheable=true)
+  public static List<PayUser__c> getAllUsers() {
+    List<PayUser__c> users = new List<PayUser__c>(
+      [
+        SELECT Id, Name, Email__c, Contact_Number__c
+        FROM PayUser__c
+        ORDER BY Name ASC NULLS LAST
+      ]
+    );
+
+    if (users.size() > 0) {
+      return users;
+    } else {
+      return null;
+    }
+  }
+
+  @AuraEnabled
+  public static boolean setPal(String id) {
+    PayUser__c[] user = [
+      SELECT Id
+      FROM PayUser__c
+      WHERE Email__c = :UserInfo.getUserEmail()
+      LIMIT 1
+    ];
+
+    if (user.size() > 0) {
+      Pal__c pal = new Pal__c(master_user__c = user[0].Id, slave_user__c = id);
+      insert pal;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static List<Pal__c> getUserPals() {
+    PayUser__c[] user = [
+      SELECT Id
+      FROM PayUser__c
+      WHERE Email__c = :UserInfo.getUserEmail()
+      LIMIT 1
+    ];
+
+    if (user.size() > 0) {
+      Pal__c[] pal = [
+        SELECT
+          Id,
+          master_user__r.Name,
+          slave_user__r.Name,
+          Type__c,
+          slave_user__c
+        FROM Pal__c
+        WHERE master_user__c = :user[0].Id
+      ];
+
+      if (pal.size() > 0) {
+        return pal;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  @AuraEnabled
+  public static boolean addMoney(String id, Integer num) {
+    Wallet__c wall = [SELECT Balance__c FROM Wallet__c WHERE User__c = :id];
+    Entry__c ent = new Entry__c(
+      Amount__c = num,
+      User__c = id,
+      Expense_Description__c = 'Pal ' + UserInfo.getName() + ' Paid'
+    );
+    wall.Balance__c += num;
+    update wall;
+    insert ent;
+    return true;
+  }
 }
