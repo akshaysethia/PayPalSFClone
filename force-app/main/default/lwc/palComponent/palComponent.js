@@ -347,12 +347,11 @@ export default class PalComponent extends LightningElement {
   }
 
   handleNameChange(event) {
-    console.log(event.target.value);
     if (event.target.value === "") {
       this.pals = this.backup;
     } else {
       this.pals = this.backup.filter((item) =>
-        item.Name.includes(event.target.value)
+        item.Name.toLowerCase().includes(event.target.value.toLowerCase())
       );
     }
   }
