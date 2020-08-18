@@ -38,6 +38,15 @@
       <template if:false={loader}>
         <template if:false={error}>
           <template if:true={pals}>
+            <br />
+            <div style="margin: 40px;">
+              <lightning-input
+                type="text"
+                label="Search For Pal"
+                onkeyup={handleNameChange}
+              ></lightning-input>
+            </div>
+            <br />
             <lightning-datatable
               key-field="Id"
               data={pals}
@@ -80,7 +89,7 @@
                     </h2>
                   </header>
                   <div
-                    class="slds-modal__content slds-p-around_medium"
+                    class="slds-modal__content slds-var-p-around_medium"
                     id="modal-content-id-1"
                   >
                     <lightning-record-edit-form

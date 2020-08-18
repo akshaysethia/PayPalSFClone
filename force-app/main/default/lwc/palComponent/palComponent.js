@@ -57,6 +57,7 @@ export default class PalComponent extends LightningElement {
   cols = cols;
   error;
   loader = true;
+  backup;
 
   @wire(getAllUsers)
   funct({ data, error }) {
@@ -91,6 +92,7 @@ export default class PalComponent extends LightningElement {
 
       this.loader = false;
       this.pals = values;
+      this.backup = values;
       this.error = null;
     } else if (error) {
       this.loader = false;
@@ -341,6 +343,17 @@ export default class PalComponent extends LightningElement {
           })
         );
       }
+    }
+  }
+
+  handleNameChange(event) {
+    console.log(event.target.value);
+    if (event.target.value === "") {
+      this.pals = this.backup;
+    } else {
+      this.pals = this.backup.filter((item) =>
+        item.Name.includes(event.target.value)
+      );
     }
   }
 }
