@@ -1,9 +1,10 @@
 import { LightningElement, track, wire } from "lwc";
+import { NavigationMixin } from "lightning/navigation";
+import { updateRecord } from "lightning/uiRecordApi";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getEntries from "@salesforce/apex/dataFetch.getEntries";
 import EntryId from "@salesforce/schema/Entry__c.Id";
 import EntryFlag from "@salesforce/schema/Entry__c.Flag_This__c";
-import { updateRecord } from "lightning/uiRecordApi";
 import EntryComment from "@salesforce/schema/Entry__c.Comment__c";
 
 const columns = [
@@ -36,7 +37,9 @@ const columns = [
   }
 ];
 
-export default class PassbookComponent extends LightningElement {
+export default class PassbookComponent extends NavigationMixin(
+  LightningElement
+) {
   @track entries = null;
   @track draftValues = [];
   error = null;
@@ -64,7 +67,12 @@ export default class PassbookComponent extends LightningElement {
   }
 
   handlePDF() {
-    print(this.entries);
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "/apex/Profile"
+      }
+    });
   }
 
   handleSave(event) {

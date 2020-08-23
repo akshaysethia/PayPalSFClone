@@ -21,6 +21,13 @@
               <p>Contact: {profile.Contact_Number__c}</p>
               <br />
               <br />
+              <lightning-button
+                variant="destructive-text"
+                label="View In Vf Page"
+                title="View profile"
+                onclick={viewProfile}
+              ></lightning-button>
+              <p>&nbsp; &nbsp;</p>
               <template if:false={edit}>
                 <lightning-button
                   variant="destructive-text"
@@ -290,6 +297,16 @@
                       currency-code="INR"
                     ></lightning-formatted-number>
                   </p>
+                </div>
+                <br />
+                <br />
+                <div style="text-align: center;">
+                  <lightning-button
+                    variant="destructive-text"
+                    label="View Card"
+                    title="View Card"
+                    onclick={viewcard}
+                  ></lightning-button>
                 </div>
               </template>
             </template>

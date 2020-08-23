@@ -1,5 +1,6 @@
 import { LightningElement, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { NavigationMixin } from "lightning/navigation";
 import { updateRecord } from "lightning/uiRecordApi";
 import getUser from "@salesforce/apex/dataFetch.getUser";
 import makeUser from "@salesforce/apex/dataFetch.makeUser";
@@ -11,7 +12,7 @@ import User_Number from "@salesforce/schema/PayUser__c.Contact_Number__c";
 import WalletId from "@salesforce/schema/Wallet__c.Id";
 import WalletAddAmount from "@salesforce/schema/Wallet__c.Add_Amount__c";
 
-export default class UserComponent extends LightningElement {
+export default class UserComponent extends NavigationMixin(LightningElement) {
   @track profile = null;
   @track card = null;
   @track wallet = null;
@@ -23,20 +24,23 @@ export default class UserComponent extends LightningElement {
   edit = false;
   error = null;
   disabled = false;
+  wiredProfile = null;
+  wiredWallet = null;
 
   @wire(getUser)
-  user({ data, error }) {
-    if (data) {
+  user(result) {
+    this.wiredProfile = result;
+    if (result.data) {
       this.loader = false;
       this.addProfle = false;
-      this.profile = data;
+      this.profile = result.data;
       this.error = null;
-    } else if (error) {
+    } else if (result.error) {
       this.loader = false;
       this.addProfile = false;
       this.profile = null;
-      this.error = JSON.stringify(error);
-    } else if (data === null) {
+      this.error = JSON.stringify(result.error);
+    } else if (result.data === null) {
       this.addProfile = true;
       this.profile = null;
       this.error = null;
@@ -60,9 +64,11 @@ export default class UserComponent extends LightningElement {
   }
 
   walletButton() {
+    console.log("Wallet Called !");
     this.loader = true;
     getWallet()
       .then((data) => {
+        this.wiredWallet = data;
         if (data) {
           this.loader = false;
           this.wallet = data;
@@ -141,6 +147,7 @@ export default class UserComponent extends LightningElement {
               variant: "success"
             })
           );
+          window.location.reload();
         })
         .catch((error) => {
           this.editProfile();
@@ -152,7 +159,6 @@ export default class UserComponent extends LightningElement {
             })
           );
         });
-      window.location.reload();
     } else {
       this.dispatchEvent(
         new ShowToastEvent({
@@ -192,7 +198,6 @@ export default class UserComponent extends LightningElement {
             variant: "success"
           })
         );
-
         window.location.reload();
       })
       .catch(() => {
@@ -204,5 +209,23 @@ export default class UserComponent extends LightningElement {
           })
         );
       });
+  }
+
+  viewcard() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "/apex/Payuser"
+      }
+    });
+  }
+
+  viewProfile() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "/apex/User"
+      }
+    });
   }
 }
